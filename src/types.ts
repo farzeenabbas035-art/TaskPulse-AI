@@ -1,19 +1,24 @@
 export type ViewMode = 'input' | 'blueprint' | 'track' | 'export' | 'aichat';
-export type TabMode = 'roadmap' | 'flashcards' | 'actionplan';
 
 export interface FileAttachment {
   id: string;
   name: string;
-  size: number; // in bytes
+  size: number;
   type: string;
   uploadDate: string;
   progress?: number;
+  extractedText?: string;
+  wordCount?: number;
+  isExtracting?: boolean;
+  extractionError?: string;
+  base64Data?: string;
 }
 
 export interface TimelineMilestone {
   id: string;
   title: string;
   completed: boolean;
+  dueDate?: string;
 }
 
 export interface WeeklyTimelineItem {
@@ -22,8 +27,8 @@ export interface WeeklyTimelineItem {
   title: string;
   statusText: string;
   status: 'completed' | 'active' | 'scheduled';
-  hoursTotal?: number;
-  milestonesLeft?: number;
+  hoursTotal: number;
+  milestonesLeft: number;
   milestones: TimelineMilestone[];
 }
 
@@ -31,18 +36,17 @@ export interface CriticalMilestone {
   id: string;
   title: string;
   completed: boolean;
-  category?: 'core' | 'lab' | 'theory';
-  aiTip?: string;
+  category: 'core' | 'lab' | 'theory';
+  aiTip: string;
+  dueDate?: string;
 }
 
 export interface Flashcard {
   id: string;
   question: string;
   answer: string;
-  difficulty: 'Hard' | 'Medium' | 'Easy';
+  difficulty: 'Easy' | 'Medium' | 'Hard';
   category: string;
-  reviewedCount?: number;
-  lastRating?: 'correct' | 'review';
 }
 
 export interface ActionPlanItem {
@@ -50,48 +54,38 @@ export interface ActionPlanItem {
   title: string;
   estimatedMinutes: number;
   priority: 'high' | 'medium' | 'low';
-  type: 'lab' | 'draft' | 'video' | 'reading';
+  type: 'reading' | 'lab' | 'draft' | 'quiz';
   completed: boolean;
   notes?: string;
 }
 
-export interface AIRecommendation {
-  id: string;
-  title: string;
-  description: string;
-  actionText?: string;
-  timeSavedMinutes?: number;
-}
-
-export interface Blueprint {
+export interface BlueprintData {
   id: string;
   title: string;
   subtitle: string;
   readinessScore: number;
   createdAt: string;
   lastUpdated: string;
-  syllabusText?: string;
   weeklyTimeline: WeeklyTimelineItem[];
   criticalMilestones: CriticalMilestone[];
   flashcards: Flashcard[];
   actionPlan: {
-    recommendation: AIRecommendation;
+    recommendation: {
+      id: string;
+      title: string;
+      description: string;
+      actionText: string;
+      timeSavedMinutes: number;
+    };
     items: ActionPlanItem[];
   };
-}
-
-export interface SyllabusTemplate {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  briefText: string;
-  sampleBlueprintId: string;
+  syllabusText?: string;
+  attachedFiles?: FileAttachment[];
 }
 
 export interface ChatMessage {
   id: string;
-  sender: 'user' | 'ai';
+  sender: 'user' | 'copilot';
   text: string;
   timestamp: string;
   suggestedActions?: string[];
